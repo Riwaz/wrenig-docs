@@ -1,0 +1,3 @@
+= Routing Model
+
+NOTE: TBD: Route JSON structure, condition evaluation, route ordering, default route, Router configuration

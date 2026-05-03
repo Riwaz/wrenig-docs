@@ -1,0 +1,3 @@
+= CryptoHeaderFilter
+
+NOTE: TBD: Encrypt and decrypt operation, key and algorithm configuration, header name, configuration example

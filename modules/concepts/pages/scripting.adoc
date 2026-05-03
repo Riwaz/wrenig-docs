@@ -1,0 +1,3 @@
+= Scripting
+
+NOTE: TBD: Groovy script environment, available bindings, inline vs file-based scripts, filter script vs handler script

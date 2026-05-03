@@ -1,0 +1,3 @@
+= SwitchFilter
+
+NOTE: TBD: onRequest and onResponse cases, condition expression, handler reference, configuration example

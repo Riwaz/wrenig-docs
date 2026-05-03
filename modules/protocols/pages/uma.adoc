@@ -1,0 +1,3 @@
+= UMA
+
+NOTE: TBD: UmaResourceServerFilter configuration, UmaSharingService, resource registration, permission ticket flow, ShareCollectionProvider

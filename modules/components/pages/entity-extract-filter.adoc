@@ -1,0 +1,3 @@
+= EntityExtractFilter
+
+NOTE: TBD: Message type selection, regex extractor configuration, target attributes mapping, configuration example

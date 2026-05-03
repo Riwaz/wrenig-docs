@@ -1,0 +1,3 @@
+= ThrottlingFilter
+
+NOTE: TBD: DefaultRateThrottlingPolicy, MappedThrottlingPolicy, ScriptableThrottlingPolicy, rate and duration, requestGroupingPolicy

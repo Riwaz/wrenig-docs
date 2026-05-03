@@ -1,0 +1,3 @@
+= Decorators
+
+NOTE: TBD: Capture decorator, timer decorator, baseUri decorator, global vs per-object application

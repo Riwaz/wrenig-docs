@@ -1,0 +1,3 @@
+= LocationHeaderFilter
+
+NOTE: TBD: Location header rewriting, base URI rebasing, configuration example

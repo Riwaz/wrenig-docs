@@ -1,0 +1,3 @@
+= Security
+
+NOTE: TBD: KeyStore configuration, TrustManager configuration, KeyManager configuration, TrustAllManager, wiring into ClientHandler

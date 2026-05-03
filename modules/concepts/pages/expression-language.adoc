@@ -1,0 +1,3 @@
+= Expression Language
+
+NOTE: TBD: EL syntax, built-in bindings (request, response, session, attributes), built-in functions, environment and system property plugins, left-value expressions

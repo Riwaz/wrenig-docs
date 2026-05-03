@@ -1,0 +1,3 @@
+= ClientHandler
+
+NOTE: TBD: TLS configuration references, connection and socket timeouts, hostname verifier, configuration example

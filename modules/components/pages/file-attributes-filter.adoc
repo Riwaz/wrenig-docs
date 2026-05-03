@@ -1,0 +1,3 @@
+= FileAttributesFilter
+
+NOTE: TBD: File and delimiter configuration, lookup key expression, target attributes mapping, configuration example

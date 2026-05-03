@@ -1,0 +1,3 @@
+= OAuth 2.0 Client
+
+NOTE: TBD: ClientRegistration configuration, Authorization Code flow, DiscoveryFilter, loginHandler and failureHandler, session.oauth2 binding

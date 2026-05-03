@@ -1,0 +1,3 @@
+= SqlAttributesFilter
+
+NOTE: TBD: DataSource heap reference, prepared statement, parameter expressions, target attributes mapping, configuration example

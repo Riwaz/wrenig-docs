@@ -1,0 +1,3 @@
+= ConditionEnforcementFilter
+
+NOTE: TBD: Condition expression, failure handler configuration, configuration example

@@ -1,0 +1,3 @@
+= SAML 2.0
+
+NOTE: TBD: SamlFederationHandler configuration, SP and IdP metadata, assertion consumer service URL, session attribute mapping

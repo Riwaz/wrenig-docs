@@ -1,0 +1,3 @@
+= HeaderFilter
+
+NOTE: TBD: Adding headers, removing headers, message type selection, configuration example

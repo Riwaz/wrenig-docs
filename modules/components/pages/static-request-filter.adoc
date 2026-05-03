@@ -1,0 +1,3 @@
+= StaticRequestFilter
+
+NOTE: TBD: Method and URI configuration, headers, entity, configuration example

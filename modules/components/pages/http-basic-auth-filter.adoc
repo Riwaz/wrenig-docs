@@ -1,0 +1,3 @@
+= HttpBasicAuthFilter
+
+NOTE: TBD: Username and password expressions, 401 replay behavior, failure handler, configuration example

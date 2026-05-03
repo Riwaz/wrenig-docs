@@ -1,0 +1,3 @@
+= SequenceHandler
+
+NOTE: TBD: Handler bindings, postcondition expression, fallback pattern, configuration example

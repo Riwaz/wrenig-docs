@@ -1,0 +1,3 @@
+= ScriptableHandler
+
+NOTE: TBD: Heaplet configuration, inline vs file-based script, available bindings, configuration example

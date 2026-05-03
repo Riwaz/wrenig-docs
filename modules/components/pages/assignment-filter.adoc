@@ -1,0 +1,3 @@
+= AssignmentFilter
+
+NOTE: TBD: onRequest and onResponse assignment lists, target and value expressions, configuration example

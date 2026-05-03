@@ -1,0 +1,3 @@
+= LDAP
+
+NOTE: TBD: LdapClient usage from Groovy scripts, connection and bind, search operations

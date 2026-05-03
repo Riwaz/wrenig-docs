@@ -1,0 +1,3 @@
+= Installation
+
+NOTE: TBD: Prerequisites, WAR deployment, OPENIG_BASE system property, directory layout (config, routes, scripts, tmp)

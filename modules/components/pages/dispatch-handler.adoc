@@ -1,0 +1,3 @@
+= DispatchHandler
+
+NOTE: TBD: Bindings list, condition expression, handler reference, configuration example

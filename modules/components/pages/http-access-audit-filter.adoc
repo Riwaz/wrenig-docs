@@ -1,0 +1,3 @@
+= HttpAccessAuditFilter
+
+NOTE: TBD: AuditService heap reference, recorded event fields, configuration example

@@ -1,0 +1,3 @@
+= CookieFilter
+
+NOTE: TBD: Cookie actions (MANAGE, RELAY, SUPPRESS), cookie name pattern configuration, configuration example

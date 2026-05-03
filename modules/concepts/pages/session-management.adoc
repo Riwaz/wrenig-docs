@@ -1,0 +1,3 @@
+= Session Management
+
+NOTE: TBD: Default in-memory session, JwtCookieSession, JwtSessionManager configuration, cookie name and domain settings

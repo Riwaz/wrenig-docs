@@ -1,0 +1,3 @@
+= Base Configuration
+
+NOTE: TBD: config.json structure, Router heap object, globalDecorators, session configuration, temporaryStorage
