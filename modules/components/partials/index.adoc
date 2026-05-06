@@ -1,0 +1,3 @@
+= Component Reference
+
+NOTE: TBD: Filter vs handler distinction, filter reference table, handler reference table
