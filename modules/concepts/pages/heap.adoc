@@ -1,0 +1,289 @@
+= Heap
+
+Wren:IG uses a _heap_ (a named registry of configuration objects) to organize the objects that the gateway and its routes use.
+You declare objects in heap configuration arrays.
+Type-specific _heaplets_ (factory objects that create heap entries) create the objects, and Wren:IG gets them by name.
+A heap array can appear in the global configuration file, in any route file, or in both.
+The `type` field in each object declaration names the heaplet to use.
+Wren:IG finds and invokes this heaplet automatically.
+
+== Heap Hierarchy
+
+Wren:IG has two heap levels, a gateway-level (global) heap and a local heap for each route.
+
+=== Global Heap
+
+Wren:IG creates the global heap at gateway startup.
+The global heap holds objects that all routes share, such as the xref:concepts:routing-model.adoc[Router] handler itself.
+
+The global heap exposes an `openig` EL (Expression Language) variable, which the `Environment` object of the gateway backs.
+This variable gives access to the file system layout of the gateway through properties such as `openig.baseDirectory` and `openig.configDirectory`.
+
+=== Route-Local Heap
+
+Each route has its own local heap.
+Wren:IG creates this heap when it loads the route, and destroys it when it unloads the route.
+The local heap of a route is a child of the heap that declares the `Router` object.
+For a `Router` declared in the gateway configuration, this is the global heap.
+
+Objects in the local heap of a route can reference any object in the global heap by name.
+Other routes and the global heap cannot see the objects in the local heap of a route.
+
+When Wren:IG looks up an object by name, it searches the local heap first.
+If the local heap does not have the name, the search continues up the parent chain recursively.
+
+For the events that trigger route loading and unloading, see xref:concepts:routing-model.adoc[Routing Model].
+
+== Object Declarations
+
+You declare objects as elements of a `heap` array.
+Each declaration is a JSON object with the following fields.
+
+.Heap object declaration (from the built-in `default-config.json` of the gateway)
+[source,json]
+----
+{
+  "name": "_router",
+  "type": "Router",
+  "config": {
+    "defaultHandler": {
+      // ...
+    }
+  }
+}
+----
+
+`name`::
+(String, required.)
+Unique name for this object within the heap.
+Two objects with the same name in the same heap cause a configuration error at load time.
+
+`type`::
+(String, required.)
+Type alias or fully qualified class name of the class to instantiate.
+See <<type-resolution>>.
+
+`config`::
+(Object, optional.)
+Configuration object passed to the heaplet.
+Default: `{}`.
+
+.Example (illustrative): named heap object
+[source,json]
+----
+{
+  "heap": [
+    {
+      "name": "Backend",
+      "type": "ClientHandler",
+      "config": {
+        "connections": 64
+      }
+    }
+  ],
+  "handler": "Backend"
+}
+----
+
+=== Inline Declarations
+
+Any configuration field that expects an object reference can contain an _inline declaration_ instead of a reference to a named heap object.
+An inline declaration is a JSON object with a `type`, an optional `config`, and an optional `name`.
+When the declaration has no `name`, the heap generates a name from the type and the location of the declaration.
+The heap stores the object in the enclosing heap.
+
+.Example (illustrative): inline handler declaration
+[source,json]
+----
+{
+  "handler": {
+    "type": "StaticResponseHandler",
+    "config": { "status": 200, "reason": "OK" }
+  }
+}
+----
+
+[#type-resolution]
+== Type Resolution
+
+Wren:IG resolves the value of the `type` field to a Java class in two steps.
+
+1. Wren:IG looks up the value as an alias in all registered `ClassAliasResolver` services (loaded through `ServiceLoader`).
+   The first resolver that returns a non-null class wins.
+   Alias lookup is case-sensitive.
+2. If no alias matches, Wren:IG treats the value as a fully qualified class name and loads it through the thread context class loader.
+
+=== Built-in Type Aliases
+
+The `openig-core` module registers the following built-in type aliases.
+
+[cols="1,3",options="header"]
+|===
+| Alias | Object type
+
+| xref:components:assignment-filter.adoc[AssignmentFilter] | Assigns EL-evaluated values to request or response attributes.
+| xref:components:http-access-audit-filter.adoc[AuditService] | Records HTTP access audit events.
+| xref:concepts:decorators.adoc[BaseUriDecorator] | Decorator that rewrites the request base URI.
+| xref:concepts:decorators.adoc[CaptureDecorator] | Decorator that captures request and response messages.
+| xref:components:chain-handler.adoc[Chain] | Routes a request through a list of filters to a terminal handler.
+| xref:components:chain-handler.adoc[ChainOfFilters] | Combines a list of filters without a terminal handler.
+| xref:components:client-handler.adoc[ClientHandler] | Forwards requests to a backend server.
+| xref:components:conditional-filter.adoc[ConditionalFilter] | Applies a wrapped filter only when a condition is true.
+| xref:components:condition-enforcement-filter.adoc[ConditionEnforcementFilter] | Blocks requests that fail a condition check.
+| xref:components:cookie-filter.adoc[CookieFilter] | Manages cookies in requests and responses.
+| xref:components:crypto-header-filter.adoc[CryptoHeaderFilter] | Encrypts or decrypts HTTP header values.
+| xref:components:throttling-filter.adoc[DefaultRateThrottlingPolicy] | Fixed-rate throttling policy.
+| xref:concepts:decorators.adoc[Delegate] | Delegates to another existing heap object.
+| `DesKeyGenHandler` | Generates a DES key and writes it to the exchange.
+| xref:components:dispatch-handler.adoc[DispatchHandler] | Dispatches to different handlers based on conditions.
+| xref:components:entity-extract-filter.adoc[EntityExtractFilter] | Extracts content from the request or response entity.
+| xref:components:file-attributes-filter.adoc[FileAttributesFilter] | Loads attributes from a flat-file store.
+| xref:components:header-filter.adoc[HeaderFilter] | Adds or removes HTTP headers.
+| xref:components:http-basic-auth-filter.adoc[HttpBasicAuthFilter] | Adds HTTP Basic authentication credentials to outgoing requests.
+| xref:concepts:session-management.adoc[JwtSession] | Manages HTTP session state using signed JWT cookies.
+| xref:concepts:session-management.adoc[JwtSessionFactory] | Alternative alias for the same xref:concepts:session-management.adoc[JwtSessionManager] class.
+Both `JwtSession` and `JwtSessionFactory` are registered equivalently.
+| xref:concepts:security.adoc[KeyManager] | Provides a `javax.net.ssl.KeyManager` for TLS.
+| xref:concepts:security.adoc[KeyStore] | Loads a JKS or PKCS12 key store.
+| xref:components:location-header-filter.adoc[LocationHeaderFilter] | Rewrites `Location` response headers.
+| xref:components:throttling-filter.adoc[MappedThrottlingPolicy] | Rate-limiting policy that maps principal names to rates.
+| xref:components:password-replay-filter.adoc[PasswordReplayFilter] | Replays credentials for form-based login automation.
+| xref:concepts:routing-model.adoc[Router] / xref:concepts:routing-model.adoc[RouterHandler] | Evaluates routes in order and dispatches to the first match.
+| xref:deployment:configuration.adoc[ScheduledExecutorService] | Provides a thread pool for scheduled tasks.
+| xref:components:scriptable-filter.adoc[ScriptableFilter] | Filter whose behavior is defined in a Groovy script.
+| xref:components:scriptable-handler.adoc[ScriptableHandler] | Handler whose behavior is defined in a Groovy script.
+| xref:components:throttling-filter.adoc[ScriptableThrottlingPolicy] | Rate-limiting policy defined in a Groovy script.
+| xref:components:sequence-handler.adoc[SequenceHandler] | Invokes a sequence of handlers in order.
+| xref:components:sql-attributes-filter.adoc[SqlAttributesFilter] | Loads attributes from a SQL data source.
+| xref:components:static-request-filter.adoc[StaticRequestFilter] | Replaces the outgoing request with a statically configured one.
+| xref:components:static-response-handler.adoc[StaticResponseHandler] | Returns a static HTTP response.
+| xref:components:switch-filter.adoc[SwitchFilter] | Routes to different handler/filter chains based on conditions.
+| xref:deployment:configuration.adoc[TemporaryStorage] | Manages temporary in-memory or file-backed storage buffers.
+| xref:components:throttling-filter.adoc[ThrottlingFilter] | Applies rate limiting to incoming requests.
+| xref:concepts:decorators.adoc[TimerDecorator] | Decorator that records per-object request and response timing.
+| xref:concepts:security.adoc[TrustAllManager] | Trusts all TLS certificates without validation. Wren:IG logs a warning that it is not safe in production when it creates this object.
+| xref:concepts:security.adoc[TrustManager] | Provides a `javax.net.ssl.TrustManager` for TLS.
+| `WelcomeHandler` | Serves the Wren:IG welcome page.
+
+|===
+
+Other modules, such as `openig-oauth2`, register their own aliases through the same SPI.
+To use a custom type, specify its fully qualified class name as the `type` value.
+
+== Heaplet Resolution
+
+This section describes how Wren:IG finds the heaplet for a class.
+For the type alias lookup, see <<type-resolution>>.
+
+For each `type`, Wren:IG finds a _heaplet_ (a factory that creates the object instance) with this strategy:
+
+1. A `HeapletFactory` service, registered through `ServiceLoader`, that handles the target class.
+   The first factory that returns a non-null heaplet wins.
+   If any factory matches, Wren:IG does not try steps 2–4.
+2. A nested class named `Heaplet` inside the target class (for example, `com.example.Foo$Heaplet`).
+3. A standalone class named with `Heaplet` appended (for example, `com.example.FooHeaplet`).
+   Steps 2 and 3 are mutually exclusive.
+   Wren:IG tries step 3 only if step 2 gives no result.
+4. If the resolved class is itself a `Heaplet` type, Wren:IG tries to instantiate it as the heaplet.
+   This check always runs after steps 2 and 3.
+   If the instantiation succeeds, its result replaces the result of steps 2 and 3.
+
+When Wren:IG has found the heaplet, it calls the `create()` method of the heaplet with the object name, its `config`, and the enclosing heap.
+
+== Properties
+
+The `properties` key is a top-level field in both the global configuration file and in individual route files.
+It binds key-value pairs as EL variables.
+EL expressions in the configuration of the same heap can reference these keys directly.
+
+Wren:IG evaluates property values from left to right.
+A value can reference any key defined earlier in the same `properties` map.
+
+A heap inherits the properties of its parent heap, so the properties of a route inherit from the properties of the global heap.
+A local key overrides a key with the same name in the parent.
+
+.Example (illustrative): route properties with cross-reference
+[source,json]
+----
+{
+  "properties": {
+    "targetHost": "backend.example.com",
+    "targetBase": "https://${targetHost}:8443"
+  },
+  "heap": [
+    {
+      "name": "Backend",
+      "type": "ClientHandler"
+    }
+  ],
+  "handler": "Backend"
+}
+----
+
+== Decorators
+
+Decorators wrap heap objects to add cross-cutting behavior (such as request capture or timing), without changing the configuration of the object.
+The heap applies per-object decorations once, when it creates the object, and caches the result.
+The heap applies global decorations on every `get()` call.
+The decorated instance replaces the original in the heap.
+After decoration, the name of the object resolves to the decorated instance, and the original is no longer accessible by that name.
+
+=== Per-Object Decorators
+
+An object declaration can carry decorator configuration in keys next to `name`, `type`, and `config`.
+The heap applies each extra key that matches the name of a `Decorator` object in the heap as a decoration.
+
+.Example (illustrative): per-object capture decoration
+[source,json]
+----
+{
+  "heap": [
+    {
+      "name": "_capture",
+      "type": "CaptureDecorator",
+      "config": { "captureEntity": true }
+    },
+    {
+      "name": "Backend",
+      "type": "ClientHandler",
+      "_capture": "all"
+    }
+  ],
+  "handler": "Backend"
+}
+----
+
+=== Global Decorators
+
+The `globalDecorators` field applies a set of decorations to the non-decorator objects in the heap.
+Its value is a map, with decorator names as keys and decoration configurations as values.
+A decoration applies to an object only when the heap has a decorator with that name, and the decorator accepts the type of the object.
+
+A heap inherits the global decorators of its parent heap.
+The `globalDecorators` map of a route adds to the map of the parent.
+The heap applies the decorations of the parent first, then the decorations of the route.
+If the same decorator name is in both maps, both decorations run.
+The `globalDecorators` map of a route cannot suppress a decorator of the parent.
+
+The heap never decorates decorator objects themselves.
+
+.Example (illustrative): global timer decoration on all route objects
+[source,json]
+----
+{
+  "globalDecorators": {
+    "_timer": true
+  },
+  "heap": [
+    {
+      "name": "_timer",
+      "type": "TimerDecorator"
+    },
+    {
+      "name": "Backend",
+      "type": "ClientHandler"
+    }
+  ],
+  "handler": "Backend"
+}
+----

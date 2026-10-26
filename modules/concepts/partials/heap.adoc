@@ -1,3 +1,0 @@
-= Heap
-
-NOTE: TBD: Heap object declaration, type and config properties, named references, global vs route-local heap, heaplet lifecycle
